@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-label="Funny whiteboard logo, transparent background, no text, no hands, no feet">
+  <defs>
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="12" stdDeviation="12" flood-color="#000000" flood-opacity="0.18"/>
+    </filter>
+
+    <linearGradient id="frameGrad" x1="190" y1="250" x2="835" y2="650" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#222222"/>
+      <stop offset="0.5" stop-color="#6f6f6f"/>
+      <stop offset="1" stop-color="#1f1f1f"/>
+    </linearGradient>
+
+    <linearGradient id="boardGrad" x1="230" y1="275" x2="790" y2="640" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#f4f6f8"/>
+    </linearGradient>
+  </defs>
+
+  <g filter="url(#softShadow)">
+    <g id="board">
+      <rect x="190" y="220" width="644" height="456" rx="58" fill="url(#frameGrad)" stroke="#111111" stroke-width="18"/>
+      <rect x="222" y="252" width="580" height="392" rx="36" fill="url(#boardGrad)" stroke="#c5c8cc" stroke-width="13"/>
+      <rect x="286" y="645" width="452" height="39" rx="9" fill="#d7d7d7" stroke="#111111" stroke-width="10"/>
+      <rect x="304" y="618" width="93" height="39" rx="8" fill="#111111"/>
+      <rect x="323" y="625" width="58" height="28" rx="4" fill="#1463d9"/>
+    </g>
+
+    <g id="face">
+      <ellipse cx="464" cy="428" rx="61" ry="70" fill="#ffffff" stroke="#111111" stroke-width="11"/>
+      <ellipse cx="579" cy="428" rx="61" ry="70" fill="#ffffff" stroke="#111111" stroke-width="11"/>
+      <circle cx="488" cy="436" r="24" fill="#111111"/>
+      <circle cx="602" cy="436" r="24" fill="#111111"/>
+      <circle cx="497" cy="422" r="9" fill="#ffffff"/>
+      <circle cx="611" cy="422" r="9" fill="#ffffff"/>
+
+      <path d="M416 368 C436 336 474 333 493 354" fill="none" stroke="#111111" stroke-width="18" stroke-linecap="round"/>
+      <path d="M550 354 C574 335 613 340 635 370" fill="none" stroke="#111111" stroke-width="18" stroke-linecap="round"/>
+
+      <path d="M406 510 C450 591 581 609 648 518 C645 596 590 662 516 662 C445 662 394 600 406 510Z" fill="#111111"/>
+      <path d="M482 620 C512 600 552 602 584 635 C548 655 510 651 482 620Z" fill="#ef3c79"/>
+      <path d="M407 510 C448 557 585 561 648 518" fill="none" stroke="#ffffff" stroke-width="18" stroke-linecap="round"/>
+      <path d="M391 488 C382 495 376 505 371 517" fill="none" stroke="#111111" stroke-width="8" stroke-linecap="round"/>
+      <path d="M660 489 C671 495 677 504 682 517" fill="none" stroke="#111111" stroke-width="8" stroke-linecap="round"/>
+    </g>
+
+    <g id="doodles" stroke-linecap="round" stroke-linejoin="round" fill="none">
+      <path d="M299 337 L336 403 L269 371 L344 354 L285 411 Z" stroke="#1463d9" stroke-width="9"/>
+
+      <circle cx="319" cy="510" r="50" stroke="#e43d79" stroke-width="8"/>
+      <circle cx="302" cy="497" r="7" fill="#e43d79" stroke="none"/>
+      <circle cx="336" cy="497" r="7" fill="#e43d79" stroke="none"/>
+      <path d="M292 528 C309 549 331 550 350 527" stroke="#e43d79" stroke-width="8"/>
+
+      <path d="M709 561 C728 507 756 507 773 559 C788 607 817 587 838 525 L848 496" stroke="#2ba44e" stroke-width="12"/>
+      <path d="M807 508 L851 492 L859 539" stroke="#2ba44e" stroke-width="12"/>
+
+      <path d="M684 352 C684 322 710 298 741 298 C772 298 798 322 798 352 C798 373 787 390 771 401 C763 407 760 420 760 431 L722 431 C722 420 718 407 710 401 C694 390 684 373 684 352Z" stroke="#ff8a19" stroke-width="9"/>
+      <path d="M718 449 L764 449" stroke="#ff8a19" stroke-width="9"/>
+      <path d="M723 467 L759 467" stroke="#ff8a19" stroke-width="9"/>
+      <path d="M733 431 C731 404 718 393 717 381 C716 366 736 366 740 385 C744 366 765 366 764 381 C763 393 750 404 748 431" stroke="#ff8a19" stroke-width="7"/>
+
+      <path d="M742 270 L742 242" stroke="#ff8a19" stroke-width="8"/>
+      <path d="M685 289 L665 268" stroke="#ff8a19" stroke-width="8"/>
+      <path d="M800 289 L820 268" stroke="#ff8a19" stroke-width="8"/>
+      <path d="M654 347 L626 347" stroke="#ff8a19" stroke-width="8"/>
+      <path d="M830 347 L858 347" stroke="#ff8a19" stroke-width="8"/>
+    </g>
+  </g>
+</svg>
