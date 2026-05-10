@@ -17,6 +17,7 @@ const loadBtn = document.getElementById("loadBtn") as HTMLButtonElement;
 const fileNameInput = document.getElementById("fileName") as HTMLInputElement;
 const undoBtn = document.getElementById("undoBtn") as HTMLButtonElement;
 const redoBtn = document.getElementById("redoBtn") as HTMLButtonElement;
+const sceneImage = document.getElementById("sceneImage") as HTMLImageElement;
 const toolButtons = Array.from(
   document.querySelectorAll<HTMLButtonElement>("[data-tool]"),
 );
@@ -130,6 +131,11 @@ async function tauriInvoke<T>(command: string, args?: Record<string, unknown>) {
 
 async function pushSnapshot() {
   await tauriInvoke<void>("push_state", { snapshot: canvas.toDataURL("image/png") });
+}
+
+async function loadRuntimeMascotImage() {
+  const dataUrl = await tauriInvoke<string | null>("load_mascot_image");
+  if (dataUrl) sceneImage.src = dataUrl;
 }
 
 function normalizedFileName() {
@@ -302,6 +308,7 @@ resizeObserver.observe(canvas);
 window.addEventListener("resize", resizeCanvas);
 
 requestAnimationFrame(async () => {
+  await loadRuntimeMascotImage();
   setTool(activeTool);
   updateBrushReadout();
   updateColorReadout();

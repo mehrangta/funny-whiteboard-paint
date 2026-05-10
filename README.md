@@ -13,6 +13,7 @@ A transparent Tauri desktop paint app where a character holds the drawable white
 - Brush color and size controls
 - Undo and redo
 - Save and load PNG drawings from `saved_images/`
+- Replace the mascot PNG next to the `.exe` without rebuilding
 - Transparent, borderless Tauri window
 - Custom app icon/logo
 
@@ -61,6 +62,16 @@ src-tauri/target/release/funny_whiteboard.exe
 src-tauri/target/release/bundle/nsis/funny_whiteboard_0.1.0_x64-setup.exe
 src-tauri/target/release/bundle/msi/funny_whiteboard_0.1.0_x64_en-US.msi
 ```
+
+## Change Mascot Without Rebuilding
+
+Put a transparent PNG named `held-whiteboard.png` in the same folder as `funny_whiteboard.exe`:
+
+```text
+src-tauri/target/release/held-whiteboard.png
+```
+
+The app loads that file on startup. If it is missing, the built-in image from `src/assets/held-whiteboard.png` is used.
 
 ## Project Structure
 

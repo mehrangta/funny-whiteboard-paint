@@ -1,6 +1,6 @@
 use tauri::Manager;
 use std::fs;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use base64::{engine::general_purpose, Engine as _};
 use std::sync::Mutex;
 use once_cell::sync::Lazy;
@@ -18,6 +18,7 @@ static UNDO_STACK: Lazy<Mutex<Vec<String>>> = Lazy::new(|| Mutex::new(Vec::new()
 static REDO_STACK: Lazy<Mutex<Vec<String>>> = Lazy::new(|| Mutex::new(Vec::new()));
 
 const STACK_LIMIT: usize = 50; 
+const MASCOT_FILE_NAMES: [&str; 2] = ["held-whiteboard.png", "held-whiteboar.png"];
 
 #[tauri::command]
 fn push_state(snapshot: String) {
@@ -86,22 +87,7 @@ fn save_image(app: tauri::AppHandle, path: String, data: String) -> Result<Strin
 #[tauri::command]
 fn load_image(app: tauri::AppHandle, path: String) -> Result<String, String> {
     let path_buf = saved_image_path(&app, &path)?;
-    let bytes = fs::read(&path_buf).map_err(|e| format!("File read failed: {e}"))?;
-
-    let mime = match path_buf
-        .extension()
-        .and_then(|s| s.to_str())
-        .map(|s| s.to_lowercase())
-        .as_deref()
-    {
-        Some("jpg") | Some("jpeg") => "image/jpeg",
-        Some("gif") => "image/gif",
-        Some("webp") => "image/webp",
-        _ => "image/png",
-    };
-
-    let b64 = general_purpose::STANDARD.encode(&bytes);
-    Ok(format!("data:{};base64,{}", mime, b64))
+    file_to_data_url(&path_buf)
 }
 
 fn saved_image_path(app: &tauri::AppHandle, path: &str) -> Result<PathBuf, String> {
@@ -120,6 +106,44 @@ fn saved_image_path(app: &tauri::AppHandle, path: &str) -> Result<PathBuf, Strin
         .map_err(|e| format!("Failed to resolve app data dir: {e}"))?;
 
     Ok(base.join("saved_images").join(file_name))
+}
+
+#[tauri::command]
+fn load_mascot_image() -> Result<Option<String>, String> {
+    let exe_path = std::env::current_exe()
+        .map_err(|e| format!("Failed to resolve executable path: {e}"))?;
+    let exe_dir = exe_path
+        .parent()
+        .ok_or_else(|| "Failed to resolve executable directory".to_string())?;
+
+    for file_name in MASCOT_FILE_NAMES {
+        let path = exe_dir.join(file_name);
+        if path.is_file() {
+            return file_to_data_url(&path).map(Some);
+        }
+    }
+
+    Ok(None)
+}
+
+fn file_to_data_url(path: &Path) -> Result<String, String> {
+    let bytes = fs::read(path).map_err(|e| format!("File read failed: {e}"))?;
+    let b64 = general_purpose::STANDARD.encode(&bytes);
+    Ok(format!("data:{};base64,{}", mime_for_path(path), b64))
+}
+
+fn mime_for_path(path: &Path) -> &'static str {
+    match path
+        .extension()
+        .and_then(|s| s.to_str())
+        .map(|s| s.to_lowercase())
+        .as_deref()
+    {
+        Some("jpg") | Some("jpeg") => "image/jpeg",
+        Some("gif") => "image/gif",
+        Some("webp") => "image/webp",
+        _ => "image/png",
+    }
 }
 
 #[tauri::command]
@@ -192,7 +216,7 @@ pub fn run() {
             }
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![save_image, load_image, push_state, undo, redo, draw_shape])
+        .invoke_handler(tauri::generate_handler![save_image, load_image, load_mascot_image, push_state, undo, redo, draw_shape])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

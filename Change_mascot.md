@@ -6,7 +6,13 @@ The mascot and whiteboard background are one PNG asset:
 src/assets/held-whiteboard.png
 ```
 
-Replace this file to change the guy holding the whiteboard.
+For a built app, you do not need to rebuild. Put a replacement PNG beside the `.exe`:
+
+```text
+src-tauri/target/release/held-whiteboard.png
+```
+
+The app loads this local file on startup. If it is missing, it falls back to the built-in asset.
 
 ## Image Requirements
 
@@ -27,22 +33,18 @@ Replace this file to change the guy holding the whiteboard.
 held-whiteboard.png
 ```
 
-3. Replace the existing file:
+3. Copy it next to the app executable:
+
+```text
+src-tauri/target/release/held-whiteboard.png
+```
+
+4. Run the built app again.
+
+For development, you can also replace the source asset:
 
 ```text
 src/assets/held-whiteboard.png
-```
-
-4. Run the app:
-
-```powershell
-bun run tauri dev
-```
-
-5. Build the app:
-
-```powershell
-bun run tauri build
 ```
 
 ## If The Drawing Area Is Misaligned
