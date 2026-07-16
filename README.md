@@ -10,7 +10,9 @@ A transparent Tauri desktop paint app where a character holds the drawable white
 
 - Draw directly inside the whiteboard area
 - Brush, line, and rectangle tools
-- Brush color and size controls
+- Text tool with multiline typing, color, size, bold, and italic controls
+- Shared drawing and text color controls
+- Separate stroke and text size settings
 - Undo and redo
 - Save and load PNG drawings from `saved_images/`
 - Replace the mascot PNG next to the `.exe` without rebuilding
@@ -87,4 +89,6 @@ src-tauri/saved_images/      Default saved drawing folder
 
 - Drag the window from outside the drawing board area.
 - Resize from the window edges.
+- With the Text tool selected, click the board to type. Press `Ctrl+Enter` or `Cmd+Enter` to place the text and `Escape` to cancel it.
+- Placed text becomes part of the PNG drawing; use undo and retype it to make changes.
 - The held whiteboard image must keep real PNG transparency around the character and board.
