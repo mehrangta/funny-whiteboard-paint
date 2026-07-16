@@ -46,6 +46,20 @@ bun run dev
 
 ## Build
 
+Build the Windows x64 executable without creating an installer:
+
+```powershell
+bun run tauri build --target x86_64-pc-windows-msvc --no-bundle
+```
+
+The plain executable is created at:
+
+```text
+src-tauri/target/x86_64-pc-windows-msvc/release/funny_whiteboard.exe
+```
+
+The default local build still creates every bundle configured in `src-tauri/tauri.conf.json`:
+
 ```powershell
 bun run tauri build
 ```
@@ -64,6 +78,35 @@ src-tauri/target/release/funny_whiteboard.exe
 src-tauri/target/release/bundle/nsis/funny_whiteboard_0.1.0_x64-setup.exe
 src-tauri/target/release/bundle/msi/funny_whiteboard_0.1.0_x64_en-US.msi
 ```
+
+## CI And Releases
+
+Pull requests and pushes to `main` build and validate an unsigned Windows x64 executable. The CI artifact filename includes the commit SHA and is retained for 14 days.
+
+Push a stable version tag matching every application version to create a draft GitHub Release:
+
+```powershell
+git tag v0.1.0
+git push origin v0.1.0
+```
+
+Before tagging, keep these versions identical:
+
+```text
+package.json
+src-tauri/Cargo.toml
+src-tauri/tauri.conf.json
+```
+
+The release workflow publishes exactly one draft asset:
+
+```text
+funny-whiteboard-0.1.0-windows-x64.exe
+```
+
+Download the executable to a writable folder and run it directly. There is no installer or uninstaller; delete the executable to remove it. Windows WebView2 must already be installed. The executable is intentionally unsigned for now, so Windows SmartScreen or antivirus software may display a warning.
+
+Test the draft executable on a clean Windows x64 machine before manually publishing the release. The legacy `1.0` tag does not match the current application version and must not be moved or reused.
 
 ## Change Mascot Without Rebuilding
 
