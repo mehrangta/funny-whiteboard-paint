@@ -26,23 +26,23 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@de0fac2e4500dabe0009c1f80e45c0961c73812d # v6.0.2
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           persist-credentials: false
 
       - name: Set up Bun
-        uses: oven-sh/setup-bun@0c1654fda48ac798c0773a8f3a4c9a0aefb2714b # v2.2.0
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
         with:
           bun-version-file: .bun-version
 
       - name: Set up Rust
-        uses: dtolnay/rust-toolchain@0bdbbeded8f47e40ceca2fe20e4d71517f2b4311 # master; installs stable via input
+        uses: dtolnay/rust-toolchain@4be7066ada62dd38de10e7b70166bc74ed198c30 # stable
         with:
           toolchain: stable
           targets: ${{ env.WINDOWS_TARGET }}
 
       - name: Restore Rust cache
-        uses: Swatinem/rust-cache@19c3848289dc73d243d7c66e2b632edcb6215fd5 # v2.8.2
+        uses: Swatinem/rust-cache@c19371144df3bb44fab255c43d04cbc2ab54d1c4 # v2.9.1
         with:
           workspaces: ./src-tauri -> target
 
