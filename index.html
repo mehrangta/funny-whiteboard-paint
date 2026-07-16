@@ -18,7 +18,15 @@
           draggable="false"
         />
         <div class="drag-region" data-tauri-drag-region></div>
-        <canvas id="paint" aria-label="Whiteboard drawing surface"></canvas>
+        <div class="board-layer">
+          <canvas id="paint" aria-label="Whiteboard drawing surface" tabindex="-1"></canvas>
+          <textarea
+            id="textEditor"
+            aria-label="Text to place on the whiteboard"
+            wrap="off"
+            hidden
+          ></textarea>
+        </div>
       </section>
 
       <div class="toolbar clip-panel" aria-label="Drawing controls">
@@ -30,17 +38,21 @@
           </div>
 
           <div class="tool-grid">
-            <button class="tool-button is-active" type="button" data-tool="brush" aria-label="Brush tool">
+            <button class="tool-button is-active" type="button" data-tool="brush" aria-label="Brush tool" aria-pressed="true">
               <span class="hud-symbol">BR</span>
               <span>BRUSH</span>
             </button>
-            <button class="tool-button" type="button" data-tool="line" aria-label="Line tool">
+            <button class="tool-button" type="button" data-tool="line" aria-label="Line tool" aria-pressed="false">
               <span class="hud-symbol">/</span>
               <span>LINE</span>
             </button>
-            <button class="tool-button" type="button" data-tool="rect" aria-label="Rectangle tool">
+            <button class="tool-button" type="button" data-tool="rect" aria-label="Rectangle tool" aria-pressed="false">
               <span class="hud-symbol">□</span>
               <span>RECT</span>
+            </button>
+            <button class="tool-button" type="button" data-tool="text" aria-label="Text tool" aria-pressed="false">
+              <span class="hud-symbol">T</span>
+              <span>TEXT</span>
             </button>
             <button id="clearBtn" class="tool-button clear-tool" type="button" aria-label="Clear board">
               <span class="hud-symbol">×</span>
@@ -63,7 +75,7 @@
             <div class="corner corner-bottom"></div>
 
             <div class="compact-row">
-              <label class="color-swatch" for="colorPicker" aria-label="Brush color">
+              <label class="color-swatch" for="colorPicker" aria-label="Tool color">
                 <input type="color" id="colorPicker" value="#111111" />
               </label>
 
@@ -77,8 +89,8 @@
                   <span>SIZE</span>
                   <div class="size-value-row">
                     <output id="sizeValue">5PX</output>
-                    <label class="mini-range clip-slanted" for="brushSize" aria-label="Brush size">
-                      <input type="range" id="brushSize" min="1" max="30" value="5" />
+                    <label class="mini-range clip-slanted" for="toolSize">
+                      <input type="range" id="toolSize" min="1" max="30" value="5" aria-label="Stroke size" />
                       <span class="range-fill" id="rangeFill"></span>
                     </label>
                   </div>
@@ -88,6 +100,31 @@
               <input type="text" id="fileName" value="drawing.png" aria-label="File name" />
             </div>
 
+            <div id="textFormatControls" class="text-format-row" hidden>
+              <span>TEXT STYLE</span>
+              <div class="format-buttons">
+                <button
+                  id="boldBtn"
+                  class="format-button"
+                  type="button"
+                  aria-label="Bold text"
+                  aria-pressed="false"
+                  disabled
+                >
+                  B
+                </button>
+                <button
+                  id="italicBtn"
+                  class="format-button"
+                  type="button"
+                  aria-label="Italic text"
+                  aria-pressed="false"
+                  disabled
+                >
+                  I
+                </button>
+              </div>
+            </div>
           </div>
 
           <div class="system-actions">

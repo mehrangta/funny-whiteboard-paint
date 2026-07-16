@@ -31,7 +31,8 @@ body {
 }
 
 button,
-input {
+input,
+textarea {
   font: inherit;
 }
 
@@ -75,16 +76,54 @@ button {
   z-index: 1;
 }
 
-#paint {
+.board-layer {
   position: absolute;
   top: 12.57%;
   left: 26.79%;
   z-index: 2;
-  display: block;
   width: 65.1%;
   height: 60.83%;
+  overflow: hidden;
+}
+
+#paint {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
   cursor: crosshair;
   touch-action: none;
+}
+
+.board-layer.is-text-tool #paint {
+  cursor: text;
+}
+
+#textEditor {
+  position: absolute;
+  z-index: 1;
+  display: block;
+  min-width: 1px;
+  min-height: 1.2em;
+  padding: 0 2px;
+  overflow: auto;
+  color: #111111;
+  text-transform: none;
+  white-space: pre;
+  overflow-wrap: normal;
+  word-break: normal;
+  background: rgba(255, 255, 255, 0.78);
+  border: 1px dashed rgba(19, 19, 19, 0.72);
+  border-radius: 0;
+  outline: 1px solid rgba(242, 145, 0, 0.78);
+  outline-offset: -1px;
+  caret-color: currentColor;
+  resize: none;
+}
+
+#textEditor[hidden] {
+  display: none;
 }
 
 .toolbar {
@@ -238,8 +277,8 @@ button {
 
 .tool-grid {
   display: grid;
-  grid-template-columns: repeat(5, minmax(68px, 1fr));
-  gap: 14px;
+  grid-template-columns: repeat(6, minmax(58px, 1fr));
+  gap: 10px;
 }
 
 .tool-button,
@@ -345,7 +384,7 @@ button {
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: 0;
+  gap: 12px;
   padding: 16px;
   background: var(--hud-surface);
   border: 1px solid rgba(242, 145, 0, 0.24);
@@ -483,6 +522,60 @@ button {
   display: none;
 }
 
+.text-format-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 12px;
+  color: rgba(229, 226, 225, 0.7);
+  font-size: 0.76rem;
+  line-height: 1;
+  border-top: 1px solid rgba(229, 226, 225, 0.18);
+}
+
+.text-format-row[hidden] {
+  display: none;
+}
+
+.format-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.format-button {
+  display: grid;
+  width: 36px;
+  height: 30px;
+  place-items: center;
+  color: var(--hud-primary);
+  background: var(--hud-surface-low);
+  border: 1px solid var(--hud-primary);
+  font-family: "Segoe UI", Arial, sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+#italicBtn {
+  font-style: italic;
+}
+
+.format-button:hover,
+.format-button.is-active {
+  color: var(--hud-surface);
+  background: var(--hud-primary);
+}
+
+.format-button:focus-visible {
+  outline: 2px solid var(--hud-text);
+  outline-offset: 2px;
+}
+
+.format-button:disabled {
+  cursor: default;
+  opacity: 0.45;
+}
+
 #fileName {
   position: absolute;
   width: 1px;
@@ -558,6 +651,10 @@ button {
   .hud-properties {
     padding-left: 0;
     border-left: 0;
+  }
+
+  .tool-grid {
+    grid-template-columns: repeat(6, minmax(58px, 1fr));
   }
 }
 
