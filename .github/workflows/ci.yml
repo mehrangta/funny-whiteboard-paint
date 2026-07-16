@@ -1,0 +1,78 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  CARGO_TERM_COLOR: always
+  WINDOWS_TARGET: x86_64-pc-windows-msvc
+
+jobs:
+  windows-x64:
+    name: Windows x64 executable
+    runs-on: windows-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009c1f80e45c0961c73812d # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@0c1654fda48ac798c0773a8f3a4c9a0aefb2714b # v2.2.0
+        with:
+          bun-version-file: .bun-version
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@0bdbbeded8f47e40ceca2fe20e4d71517f2b4311 # master; installs stable via input
+        with:
+          toolchain: stable
+          targets: ${{ env.WINDOWS_TARGET }}
+
+      - name: Restore Rust cache
+        uses: Swatinem/rust-cache@19c3848289dc73d243d7c66e2b632edcb6215fd5 # v2.8.2
+        with:
+          workspaces: ./src-tauri -> target
+
+      - name: Install frontend dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Validate frontend
+        run: bun run build
+
+      - name: Check Rust backend
+        run: cargo check --manifest-path src-tauri/Cargo.toml --locked --target $env:WINDOWS_TARGET
+
+      - name: Build Windows x64 executable
+        run: bun run tauri build --target $env:WINDOWS_TARGET --no-bundle
+
+      - name: Validate Windows x64 executable
+        id: executable
+        shell: pwsh
+        run: |
+          $stagingDirectory = Join-Path $env:RUNNER_TEMP "funny-whiteboard-$env:GITHUB_RUN_ID-$env:GITHUB_RUN_ATTEMPT"
+          $assetName = "funny-whiteboard-windows-x64-$env:GITHUB_SHA.exe"
+          ./.github/scripts/prepare-windows-executable.ps1 `
+            -SourcePath "src-tauri/target/$env:WINDOWS_TARGET/release/funny_whiteboard.exe" `
+            -OutputPath (Join-Path $stagingDirectory $assetName) `
+            -SummaryTitle "Windows x64 CI executable"
+
+      - name: Upload Windows x64 executable
+        uses: actions/upload-artifact@f1ef09e6043b0d818b1789a0b409e1cf7d5d2920 # v7.0.1
+        with:
+          path: ${{ steps.executable.outputs.artifact_path }}
+          archive: false
+          retention-days: 14
+          if-no-files-found: error

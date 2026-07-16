@@ -1,0 +1,151 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  CARGO_TERM_COLOR: always
+  WINDOWS_TARGET: x86_64-pc-windows-msvc
+
+jobs:
+  windows-x64:
+    name: Draft Windows x64 release
+    runs-on: windows-latest
+    timeout-minutes: 45
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009c1f80e45c0961c73812d # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@0c1654fda48ac798c0773a8f3a4c9a0aefb2714b # v2.2.0
+        with:
+          bun-version-file: .bun-version
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@0bdbbeded8f47e40ceca2fe20e4d71517f2b4311 # master; installs stable via input
+        with:
+          toolchain: stable
+          targets: ${{ env.WINDOWS_TARGET }}
+
+      - name: Restore Rust cache
+        uses: Swatinem/rust-cache@19c3848289dc73d243d7c66e2b632edcb6215fd5 # v2.8.2
+        with:
+          workspaces: ./src-tauri -> target
+
+      - name: Install frontend dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Validate release version
+        id: version
+        shell: pwsh
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          Set-StrictMode -Version Latest
+          $ErrorActionPreference = "Stop"
+
+          if ($env:RELEASE_TAG -cnotmatch '^v[0-9]+\.[0-9]+\.[0-9]+$') {
+            throw "Release tag must use stable SemVer in the form vX.Y.Z"
+          }
+
+          $version = $env:RELEASE_TAG.Substring(1)
+          $packageVersion = (Get-Content package.json -Raw | ConvertFrom-Json).version
+          $tauriVersion = (Get-Content src-tauri/tauri.conf.json -Raw | ConvertFrom-Json).version
+          $cargoMetadata = cargo metadata --no-deps --format-version 1 --manifest-path src-tauri/Cargo.toml --locked | ConvertFrom-Json
+
+          if ($LASTEXITCODE -ne 0) {
+            throw "cargo metadata failed with exit code $LASTEXITCODE"
+          }
+
+          $cargoPackage = @($cargoMetadata.packages | Where-Object { $_.name -eq "funny_whiteboard" })
+          if ($cargoPackage.Count -ne 1) {
+            throw "Expected exactly one Cargo package named funny_whiteboard"
+          }
+
+          $versions = @($packageVersion, $tauriVersion, $cargoPackage[0].version)
+          $mismatches = @($versions | Where-Object { $_ -cne $version })
+          if ($mismatches.Count -ne 0) {
+            throw "Tag $env:RELEASE_TAG must match package.json ($packageVersion), tauri.conf.json ($tauriVersion), and Cargo.toml ($($cargoPackage[0].version))"
+          }
+
+          "version=$version" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+
+      - name: Validate frontend
+        run: bun run build
+
+      - name: Check Rust backend
+        run: cargo check --manifest-path src-tauri/Cargo.toml --locked --target $env:WINDOWS_TARGET
+
+      - name: Build Windows x64 executable
+        run: bun run tauri build --target $env:WINDOWS_TARGET --no-bundle
+
+      - name: Validate release executable
+        id: executable
+        shell: pwsh
+        env:
+          RELEASE_VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          $stagingDirectory = Join-Path $env:RUNNER_TEMP "funny-whiteboard-$env:GITHUB_RUN_ID-$env:GITHUB_RUN_ATTEMPT"
+          $assetName = "funny-whiteboard-$env:RELEASE_VERSION-windows-x64.exe"
+          ./.github/scripts/prepare-windows-executable.ps1 `
+            -SourcePath "src-tauri/target/$env:WINDOWS_TARGET/release/funny_whiteboard.exe" `
+            -OutputPath (Join-Path $stagingDirectory $assetName) `
+            -SummaryTitle "Windows x64 release executable"
+
+      - name: Create or update draft release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ github.ref_name }}
+          RELEASE_VERSION: ${{ steps.version.outputs.version }}
+          RELEASE_ASSET: ${{ steps.executable.outputs.artifact_path }}
+        run: |
+          Set-StrictMode -Version Latest
+          $ErrorActionPreference = "Stop"
+
+          $releaseJson = gh release view $env:RELEASE_TAG --json isDraft 2>$null
+          if ($LASTEXITCODE -eq 0) {
+            $release = $releaseJson | ConvertFrom-Json
+            if (-not $release.isDraft) {
+              throw "Release $env:RELEASE_TAG is already published and will not be modified"
+            }
+
+            gh release upload $env:RELEASE_TAG $env:RELEASE_ASSET --clobber
+            if ($LASTEXITCODE -ne 0) {
+              throw "Failed to update draft release asset"
+            }
+          } else {
+            gh release create $env:RELEASE_TAG $env:RELEASE_ASSET `
+              --verify-tag `
+              --draft `
+              --generate-notes `
+              --title "Funny Whiteboard v$env:RELEASE_VERSION"
+            if ($LASTEXITCODE -ne 0) {
+              throw "Failed to create draft release"
+            }
+          }
+
+          $release = gh release view $env:RELEASE_TAG --json isDraft,assets | ConvertFrom-Json
+          if ($LASTEXITCODE -ne 0 -or -not $release.isDraft) {
+            throw "Expected $env:RELEASE_TAG to remain a draft release"
+          }
+
+          $expectedAssetName = Split-Path -Leaf $env:RELEASE_ASSET
+          $assets = @($release.assets)
+          if ($assets.Count -ne 1 -or $assets[0].name -cne $expectedAssetName) {
+            throw "Draft release must contain exactly one asset named $expectedAssetName"
+          }
