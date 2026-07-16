@@ -91,7 +91,7 @@ jobs:
         run: cargo check --manifest-path src-tauri/Cargo.toml --locked --target $env:WINDOWS_TARGET
 
       - name: Build Windows x64 executable
-        run: bun run tauri build --target $env:WINDOWS_TARGET --no-bundle
+        run: bun run build:windows-x64
 
       - name: Validate release executable
         id: executable

@@ -49,7 +49,7 @@ bun run dev
 Build the Windows x64 executable without creating an installer:
 
 ```powershell
-bun run tauri build --target x86_64-pc-windows-msvc --no-bundle
+bun run build:windows-x64
 ```
 
 The plain executable is created at:
