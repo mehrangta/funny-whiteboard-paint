@@ -78,8 +78,8 @@ Main Windows artifacts:
 
 ```text
 src-tauri/target/release/funny_whiteboard.exe
-src-tauri/target/release/bundle/nsis/funny_whiteboard_0.1.0_x64-setup.exe
-src-tauri/target/release/bundle/msi/funny_whiteboard_0.1.0_x64_en-US.msi
+src-tauri/target/release/bundle/nsis/funny_whiteboard_0.2.0_x64-setup.exe
+src-tauri/target/release/bundle/msi/funny_whiteboard_0.2.0_x64_en-US.msi
 ```
 
 ## CI And Releases
@@ -89,8 +89,8 @@ Pull requests and pushes to `main` build and validate an unsigned Windows x64 ex
 Push a stable version tag matching every application version to create a draft GitHub Release:
 
 ```powershell
-git tag v0.1.0
-git push origin v0.1.0
+git tag v0.2.0
+git push origin v0.2.0
 ```
 
 Before tagging, keep these versions identical:
@@ -104,7 +104,7 @@ src-tauri/tauri.conf.json
 The release workflow publishes exactly one draft asset:
 
 ```text
-funny-whiteboard-0.1.0-windows-x64.exe
+funny-whiteboard-0.2.0-windows-x64.exe
 ```
 
 Download the executable to a writable folder and run it directly. There is no installer or uninstaller; delete the executable to remove it. Windows WebView2 must already be installed. The executable is intentionally unsigned for now, so Windows SmartScreen or antivirus software may display a warning.
