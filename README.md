@@ -11,10 +11,13 @@ A transparent Tauri desktop paint app where a character holds the drawable white
 - Draw directly inside the whiteboard area
 - Brush, line, and rectangle tools
 - Text tool with multiline typing, color, size, bold, and italic controls
+- Select, move, resize, restyle, edit, and delete individual objects
 - Shared drawing and text color controls
 - Separate stroke and text size settings
-- Undo and redo
-- Save and load PNG drawings from `saved_images/`
+- Object-based undo and redo
+- Save and reopen editable `.fwb` project documents
+- Import PNG files as locked backgrounds
+- Export projects as PNG images
 - Replace the mascot PNG next to the `.exe` without rebuilding
 - Transparent, borderless Tauri window
 - Custom app icon/logo
@@ -125,7 +128,6 @@ src/                         Frontend drawing UI
 src/assets/held-whiteboard.png
 src-tauri/                   Tauri and Rust backend
 src-tauri/icons/             App icon assets
-src-tauri/saved_images/      Default saved drawing folder
 ```
 
 ## Notes
@@ -133,5 +135,7 @@ src-tauri/saved_images/      Default saved drawing folder
 - Drag the window from outside the drawing board area.
 - Resize from the window edges.
 - With the Text tool selected, click the board to type. Press `Ctrl+Enter` or `Cmd+Enter` to place the text and `Escape` to cancel it.
-- Placed text becomes part of the PNG drawing; use undo and retype it to make changes.
+- With the Select tool, drag objects to move them, use handles to resize paths and shapes, double-click text to edit it, and press `Delete` or `Backspace` to remove the selection.
+- `.fwb` files contain editable objects and an optional embedded PNG background. Imported PNG pixels remain locked, but new foreground objects stay editable.
+- PNG export renders only project content; selection outlines and resize handles are not included.
 - The held whiteboard image must keep real PNG transparency around the character and board.

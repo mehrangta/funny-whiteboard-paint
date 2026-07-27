@@ -19,7 +19,8 @@
         />
         <div class="drag-region" data-tauri-drag-region></div>
         <div class="board-layer">
-          <canvas id="paint" aria-label="Whiteboard drawing surface" tabindex="-1"></canvas>
+          <canvas id="paint" aria-hidden="true"></canvas>
+          <canvas id="interaction" aria-label="Editable whiteboard drawing surface" tabindex="0"></canvas>
           <textarea
             id="textEditor"
             aria-label="Text to place on the whiteboard"
@@ -38,6 +39,10 @@
           </div>
 
           <div class="tool-grid">
+            <button class="tool-button" type="button" data-tool="select" aria-label="Select tool" aria-pressed="false">
+              <span class="hud-symbol">↖</span>
+              <span>SELECT</span>
+            </button>
             <button class="tool-button is-active" type="button" data-tool="brush" aria-label="Brush tool" aria-pressed="true">
               <span class="hud-symbol">BR</span>
               <span>BRUSH</span>
@@ -96,8 +101,6 @@
                   </div>
                 </div>
               </div>
-
-              <input type="text" id="fileName" value="drawing.png" aria-label="File name" />
             </div>
 
             <div id="textFormatControls" class="text-format-row" hidden>
@@ -128,13 +131,21 @@
           </div>
 
           <div class="system-actions">
-            <button id="saveBtn" class="system-button" type="button">
-              <span>↓</span>
-              <span>SAVE</span>
-            </button>
-            <button id="loadBtn" class="system-button" type="button">
+            <button id="openProjectBtn" class="system-button" type="button">
               <span>↑</span>
-              <span>LOAD</span>
+              <span>OPEN FWB</span>
+            </button>
+            <button id="saveProjectBtn" class="system-button" type="button">
+              <span>↓</span>
+              <span>SAVE FWB</span>
+            </button>
+            <button id="importPngBtn" class="system-button" type="button">
+              <span>↑</span>
+              <span>IMPORT PNG</span>
+            </button>
+            <button id="exportPngBtn" class="system-button" type="button">
+              <span>↓</span>
+              <span>EXPORT PNG</span>
             </button>
           </div>
         </section>
